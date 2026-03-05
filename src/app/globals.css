@@ -1,0 +1,1199 @@
+/* src/app/globals.css — Tailwind v4 style for Next.js */
+
+/* Optional: modern fonts (Google Fonts or self-hosted) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Calistoga&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+@import "tailwindcss";
+
+/* Define your theme variables → this generates bg-background, text-foreground, etc. */
+@theme {
+  --font-sans:     "Inter", system-ui, -apple-system, sans-serif;
+  --font-display:  "Calistoga", "Inter", serif;
+  --font-mono:     "JetBrains Mono", ui-monospace, monospace;
+
+  --color-primary:     hsl(221 83% 53%);   /* #2563eb */
+  --color-primary-dark: hsl(224 76% 44%);  /* #1d4ed8 */
+  --color-primary-light: hsl(214 95% 68%); /* #60a5fa */
+
+  --color-accent:     hsl(271 91% 65%);   /* #8b5cf6 */
+  --color-accent-dark: hsl(272 84% 54%);  /* #7c3aed */
+
+  --color-foreground: hsl(222 84% 4.5%);  /* #0f172a */
+  --color-background: hsl(0 0% 100%);     /* #ffffff */
+  --color-surface-1:  hsl(220 39% 97%);   /* #f1f5f9 */
+  --color-surface-2:  hsl(220 26% 92%);   /* #e2e8f0 */
+  --color-border:     hsl(215 28% 84%);   /* #cbd5e1 */
+
+  --color-success:    hsl(142 71% 29%);   /* #16a34a */
+  --color-warning:    hsl(38 92% 50%);    /* #f59e0b */
+  --color-danger:     hsl(0 84% 60%);     /* #ef4444 */
+  --color-info:       hsl(207 90% 54%);   /* #3b82f6 */
+
+  /* Dark mode overrides */
+  --color-foreground-dark: hsl(0 0% 98%);
+  --color-background-dark: hsl(222 84% 4.5%);
+  --color-surface-1-dark:  hsl(215 28% 17%);
+  --color-surface-2-dark:  hsl(215 27% 27%);
+  --color-border-dark:     hsl(215 28% 36%);
+
+  /* Shadows as theme values if you want shadow-sm etc. to use them */
+  --shadow-sm:    0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow:       0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-md:    0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-lg:    0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+/* Dark mode media query — applies the dark variants */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-foreground: var(--color-foreground-dark);
+    --color-background: var(--color-background-dark);
+    --color-surface-1:  var(--color-surface-1-dark);
+    --color-surface-2:  var(--color-surface-2-dark);
+    --color-border:     var(--color-border-dark);
+  }
+}
+
+/* Base styles — use plain CSS or @reference for theme vars if @apply fails */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+    letter-spacing: 0;
+    font-weight: 600;
+  }
+
+  h1 {
+    font-size: clamp(2.5rem, 5vw + 1rem, 4.5rem);
+    line-height: 0.92;
+    font-family: var(--font-display);
+    letter-spacing: 0.01em;
+  }
+
+  h2 {
+    letter-spacing: 0.01em;
+  }
+
+  /* Links with nice hover */
+  a {
+    color: var(--color-primary);
+    text-decoration-line: underline;
+    text-decoration-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
+    text-underline-offset: 3px;
+    transition: all 0.2s ease;
+  }
+
+  a:hover {
+    text-decoration-color: color-mix(in srgb, var(--color-primary) 70%, transparent);
+  }
+}
+
+/* Custom component classes — prefer plain CSS over @apply in v4 for reliability */
+@layer components {
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background-color: transparent;
+    border-bottom: 1px solid transparent;
+    transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .navbar-top {
+    background-color: transparent !important;
+    border-bottom-color: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .navbar-scrolled {
+    background-color: rgb(15 23 42 / 0.72);
+    backdrop-filter: blur(8px);
+    border-bottom-color: rgb(255 255 255 / 0.12);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .nav-slot-link {
+    display: inline-block;
+    position: relative;
+    text-decoration: none;
+    line-height: 1;
+    color: var(--color-foreground);
+    transition: color 0.28s ease;
+  }
+
+  .nav-slot-viewport {
+    display: block;
+    height: 1.2em;
+    overflow: hidden;
+  }
+
+  .nav-slot-track {
+    display: flex;
+    flex-direction: column;
+    transform: translateY(0%);
+    transition: transform 0.46s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+  }
+
+  .nav-slot-text {
+    display: block;
+    height: 1.2em;
+    line-height: 1.2em;
+    white-space: nowrap;
+  }
+
+  .nav-slot-link:hover .nav-slot-track,
+  .nav-slot-link:focus-visible .nav-slot-track {
+    transform: translateY(-50%);
+  }
+
+  .nav-slot-link:hover,
+  .nav-slot-link:focus-visible {
+    color: color-mix(in srgb, var(--color-foreground) 78%, var(--color-primary) 22%);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.75;
+  }
+
+  .btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+    box-shadow: 0 1px 3px rgba(37, 99, 235, 0.25);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--color-primary-dark);
+  }
+
+  .btn-shimmer {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    z-index: 0;
+  }
+
+  .btn-shimmer::after {
+    content: "";
+    position: absolute;
+    top: -130%;
+    bottom: -130%;
+    left: -45%;
+    width: 55%;
+    background: linear-gradient(
+      105deg,
+      transparent 0%,
+      rgb(255 255 255 / 0.12) 38%,
+      rgb(255 255 255 / 0.78) 50%,
+      rgb(255 255 255 / 0.12) 62%,
+      transparent 100%
+    );
+    transform: translateX(-180%) skewX(-16deg);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .btn-shimmer:hover::after,
+  .btn-shimmer:focus-visible::after {
+    animation: btn-shimmer-sweep 0.95s cubic-bezier(0.22, 1, 0.36, 1) 1;
+  }
+
+  .btn-shimmer.btn-primary:hover,
+  .btn-shimmer.btn-primary:focus-visible {
+    background-color: color-mix(in srgb, var(--color-primary) 82%, var(--color-primary-dark) 18%);
+  }
+
+  @keyframes btn-shimmer-sweep {
+    from {
+      transform: translateX(-180%) skewX(-16deg);
+    }
+    to {
+      transform: translateX(420%) skewX(-16deg);
+    }
+  }
+
+  .btn-outline {
+    border: 2px solid rgb(255 255 255 / 0.9);
+    color: var(--color-foreground-dark);
+  }
+
+  .btn-outline:hover {
+    background-color: rgb(255 255 255 / 0.1);
+    border-color: rgb(255 255 255 / 1);
+  }
+
+  .card {
+    background-color: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+    box-shadow: var(--shadow);
+  }
+
+  .hero-root {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    isolation: isolate;
+    background-image: url("https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1920&q=80");
+    background-size: cover;
+    background-position: center;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-border) 70%, transparent);
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      rgb(0 0 0 / 0.8) 0%,
+      rgb(0 0 0 / 0.74) 45%,
+      rgb(0 0 0 / 0.68) 100%
+    );
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-frame {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 2.5rem;
+    align-items: center;
+    padding-top: 4rem;
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .hero-frame.is-entering {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .hero-frame.is-exiting {
+    opacity: 0;
+    transform: translateY(-0.4rem);
+  }
+
+  .hero-copy {
+    color: var(--color-foreground-dark);
+    max-width: 42rem;
+  }
+
+  .hero-copy h1,
+  .hero-copy p {
+    color: var(--color-foreground-dark);
+  }
+
+  .hero-kicker {
+    margin: 0 0 0.9rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-foreground-dark) 84%, var(--color-primary-light) 16%);
+    text-decoration: none;
+  }
+
+  .hero-subtitle {
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+    font-size: clamp(1rem, 1vw + 0.75rem, 1.2rem);
+    line-height: 1.65;
+    color: color-mix(in srgb, var(--color-foreground-dark) 90%, var(--color-surface-2) 10%);
+    max-width: 38rem;
+  }
+
+  .hero-title {
+    opacity: 0;
+    transform: translateY(0.55rem);
+    animation: hero-title-in 0.55s ease forwards;
+  }
+
+  .hero-subgroup {
+    opacity: 0;
+    transform: translateY(0.6rem);
+    animation: hero-subgroup-in 0.55s ease forwards;
+    animation-delay: 0.45s;
+  }
+
+  .hero-visual {
+    display: grid;
+    gap: 0.9rem;
+    align-content: center;
+    justify-self: end;
+    width: min(28rem, 100%);
+    opacity: 1;
+    transition: opacity 0.75s ease, transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .hero-frame.is-exiting .hero-visual {
+    opacity: 0;
+    transform: translateY(-0.65rem) translateX(0.4rem);
+  }
+
+  .hero-card {
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+    padding: 0.95rem 1rem;
+    border-radius: 0.8rem;
+    border: 1px solid color-mix(in srgb, var(--color-border) 65%, transparent);
+    background: color-mix(in srgb, var(--color-background) 18%, transparent);
+    backdrop-filter: blur(6px);
+    box-shadow: var(--shadow-sm);
+    color: var(--color-foreground-dark);
+    opacity: 0;
+    transform: translateX(2rem);
+    animation: hero-card-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: var(--card-delay, 1s);
+  }
+
+  .hero-card-title {
+    margin: 0;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .hero-card-detail {
+    margin: 0.2rem 0 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: color-mix(in srgb, var(--color-foreground-dark) 90%, var(--color-surface-2) 10%);
+  }
+
+  .hero-dots {
+    position: absolute;
+    left: 50%;
+    bottom: 1.2rem;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.45rem;
+  }
+
+  .hero-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var(--color-background) 36%, transparent);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+  }
+
+  .hero-dot.is-active {
+    background-color: var(--color-primary-light);
+    transform: scale(1.2);
+  }
+
+  @keyframes hero-title-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.55rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes hero-subgroup-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.6rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes hero-card-in {
+    from {
+      opacity: 0;
+      transform: translateX(2rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @media (max-width: 960px) {
+    .hero-frame {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      padding-top: 5.5rem;
+      padding-bottom: 4rem;
+      min-height: 100vh;
+    }
+
+    .hero-visual {
+      justify-self: stretch;
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .hero-root {
+      min-height: auto;
+    }
+
+    .hero-frame {
+      min-height: auto;
+      padding-top: 2rem;
+    }
+
+    .hero-dots {
+      bottom: 0.85rem;
+    }
+  }
+
+  .signup-shell {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    pointer-events: none;
+  }
+
+  .signup-shell.is-open {
+    pointer-events: auto;
+  }
+
+  .signup-backdrop {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    background: rgb(2 6 23 / 0.62);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .signup-shell.is-open .signup-backdrop {
+    opacity: 1;
+  }
+
+  .signup-panel {
+    position: absolute;
+    inset: 0;
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background-color: var(--color-background);
+    transform: translateX(100%);
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    overflow: hidden;
+  }
+
+  .signup-shell.is-open .signup-panel {
+    transform: translateX(0);
+  }
+
+  .signup-left {
+    background: linear-gradient(
+      140deg,
+      rgb(2 6 23 / 0.97) 0%,
+      rgb(15 23 42 / 0.95) 45%,
+      rgb(30 41 59 / 0.94) 100%
+    );
+    color: var(--color-foreground-dark);
+    padding: clamp(2rem, 4vw, 4rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .signup-kicker {
+    margin: 0;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgb(191 219 254 / 0.95);
+  }
+
+  .signup-left-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 2.5vw + 1rem, 3rem);
+    line-height: 1;
+    color: var(--color-foreground-dark);
+  }
+
+  .signup-left-subtitle {
+    margin: 0;
+    max-width: 32rem;
+    line-height: 1.7;
+    color: rgb(241 245 249 / 0.95);
+  }
+
+  .signup-feature-list {
+    margin: 0.2rem 0 0;
+    padding-left: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.65rem;
+    color: rgb(241 245 249 / 0.95);
+  }
+
+  .signup-feature-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    opacity: 0;
+    transform: translateY(0.5rem);
+    animation: signup-feature-in 0.55s ease forwards;
+  }
+
+  .signup-feature-list li:nth-child(1) {
+    animation-delay: 0.08s;
+  }
+
+  .signup-feature-list li:nth-child(2) {
+    animation-delay: 0.24s;
+  }
+
+  .signup-feature-list li:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  .signup-feature-icon {
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    line-height: 1;
+    background: rgb(96 165 250 / 0.18);
+    border: 1px solid rgb(147 197 253 / 0.38);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.05) inset;
+    margin-top: 0.1rem;
+    flex-shrink: 0;
+  }
+
+  .signup-review-carousel {
+    margin-top: 0.85rem;
+  }
+
+  .signup-review-card {
+    border: 1px solid rgb(148 163 184 / 0.28);
+    border-radius: 0.9rem;
+    background: rgb(15 23 42 / 0.5);
+    padding: 0.95rem 1rem;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 8px 24px rgb(2 6 23 / 0.24);
+    animation: signup-review-in 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .signup-review-quote {
+    margin: 0;
+    line-height: 1.55;
+    color: rgb(248 250 252 / 0.96);
+    font-size: 0.92rem;
+    font-style: italic;
+  }
+
+  .signup-review-author {
+    margin: 0.7rem 0 0;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: rgb(191 219 254 / 0.96);
+  }
+
+  .signup-review-role {
+    margin: 0.1rem 0 0;
+    font-size: 0.78rem;
+    color: rgb(226 232 240 / 0.88);
+  }
+
+  .signup-review-dots {
+    margin-top: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .signup-review-dot {
+    width: 0.38rem;
+    height: 0.38rem;
+    border-radius: 999px;
+    background: rgb(148 163 184 / 0.45);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+  }
+
+  .signup-review-dot.is-active {
+    background: rgb(96 165 250 / 0.95);
+    transform: scale(1.25);
+  }
+
+  .signup-progress {
+    margin-bottom: 1rem;
+  }
+
+  .signup-progress-track {
+    width: 100%;
+    height: 0.35rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-border) 70%, transparent);
+    overflow: hidden;
+    margin-bottom: 0.8rem;
+  }
+
+  .signup-progress-fill {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--color-primary-light), var(--color-primary));
+    transition: width 0.35s ease;
+  }
+
+  .signup-progress-steps {
+    display: grid;
+    grid-template-columns: repeat(var(--step-count, 4), minmax(0, 1fr));
+    gap: 0.35rem;
+  }
+
+  .signup-progress-step {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: color-mix(in srgb, var(--color-foreground) 58%, var(--color-border) 42%);
+  }
+
+  .signup-progress-dot {
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--color-border) 80%, transparent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    background: var(--color-background);
+  }
+
+  .signup-progress-step small {
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .signup-progress-step.is-current {
+    color: var(--color-foreground);
+  }
+
+  .signup-progress-step.is-current .signup-progress-dot {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .signup-progress-step.is-complete {
+    color: color-mix(in srgb, var(--color-foreground) 78%, var(--color-primary) 22%);
+  }
+
+  .signup-progress-step.is-complete .signup-progress-dot {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+  }
+
+  .signup-right {
+    padding: clamp(1.25rem, 3.5vw, 2.5rem);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    background-color: var(--color-background);
+  }
+
+  .signup-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+
+  .signup-step-label {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: color-mix(in srgb, var(--color-foreground) 78%, var(--color-primary) 22%);
+  }
+
+  .signup-close {
+    border: 0;
+    background: transparent;
+    color: var(--color-foreground);
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 0.45rem;
+    padding: 0.3rem 0.55rem;
+    transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .signup-close:hover,
+  .signup-close:focus-visible {
+    color: var(--color-danger);
+    background-color: color-mix(in srgb, var(--color-danger) 12%, transparent);
+    transform: translateY(-1px);
+  }
+
+  .signup-form {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1;
+  }
+
+  .signup-form-title {
+    margin: 0;
+    font-size: clamp(1.45rem, 1.4vw + 0.9rem, 2rem);
+    color: var(--color-foreground);
+  }
+
+  .signup-form-subtitle {
+    margin: 0.08rem 0 1.25rem;
+    color: color-mix(in srgb, var(--color-foreground) 74%, var(--color-border) 26%);
+    line-height: 1.55;
+  }
+
+  .signup-field span b {
+    color: var(--color-danger);
+  }
+
+  .signup-grid {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .signup-grid.two-col {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .signup-grid.one-col {
+    grid-template-columns: 1fr;
+  }
+
+  .two-col-span {
+    grid-column: 1 / -1;
+  }
+
+  .signup-field {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .signup-field span {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--color-foreground);
+  }
+
+  .signup-field input,
+  .signup-field select {
+    width: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: 0.6rem;
+    padding: 0.7rem 0.85rem;
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .signup-password-control {
+    position: relative;
+  }
+
+  .signup-password-control input {
+    padding-right: 2.6rem;
+  }
+
+  .signup-eye-btn {
+    position: absolute;
+    top: 50%;
+    right: 0.45rem;
+    transform: translateY(-50%);
+    width: 1.95rem;
+    height: 1.95rem;
+    border: 0;
+    background: transparent;
+    color: color-mix(in srgb, var(--color-foreground) 72%, var(--color-border) 28%);
+    border-radius: 0.4rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color 0.2s ease, background-color 0.2s ease;
+  }
+
+  .signup-eye-btn:hover,
+  .signup-eye-btn:focus-visible {
+    color: var(--color-foreground);
+    background: color-mix(in srgb, var(--color-surface-1) 80%, transparent);
+  }
+
+  .signup-field input:focus,
+  .signup-field select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 20%, transparent);
+  }
+
+  .signup-field input.is-invalid,
+  .signup-field select.is-invalid {
+    border-color: var(--color-danger);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-danger) 16%, transparent);
+  }
+
+  .signup-error {
+    display: block;
+    font-style: normal;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-danger);
+  }
+
+  .signup-password-tools {
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+  }
+
+  .signup-copy-btn {
+    min-width: 2.7rem;
+    width: 2.7rem;
+    padding: 0.65rem;
+  }
+
+  .signup-copy-status {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: color-mix(in srgb, var(--color-foreground) 74%, var(--color-primary) 26%);
+  }
+
+  .signup-password-meter {
+    margin-top: 0.15rem;
+    border: 1px solid color-mix(in srgb, var(--color-border) 72%, transparent);
+    border-radius: 0.75rem;
+    padding: 0.7rem 0.75rem;
+    background: color-mix(in srgb, var(--color-surface-1) 55%, var(--color-background) 45%);
+  }
+
+  .signup-password-meter-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.45rem;
+    font-size: 0.84rem;
+    color: color-mix(in srgb, var(--color-foreground) 78%, var(--color-border) 22%);
+  }
+
+  .signup-password-meter-track {
+    width: 100%;
+    height: 0.42rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-border) 70%, transparent);
+    overflow: hidden;
+  }
+
+  .signup-password-meter-fill {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    transition: width 0.25s ease, background-color 0.25s ease;
+  }
+
+  .signup-password-checks {
+    margin: 0.6rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.28rem;
+  }
+
+  .signup-password-checks li {
+    display: flex;
+    gap: 0.45rem;
+    align-items: center;
+    font-size: 0.78rem;
+    color: color-mix(in srgb, var(--color-foreground) 65%, var(--color-border) 35%);
+  }
+
+  .signup-password-checks li span:first-child {
+    width: 0.7rem;
+    text-align: center;
+  }
+
+  .signup-password-checks li.is-pass {
+    color: color-mix(in srgb, var(--color-success) 70%, var(--color-foreground) 30%);
+  }
+
+  .strength-weak {
+    color: hsl(0 84% 60%);
+  }
+
+  .signup-password-meter-fill.strength-weak {
+    background-color: hsl(0 84% 60%);
+  }
+
+  .strength-medium {
+    color: hsl(43 96% 56%);
+  }
+
+  .signup-password-meter-fill.strength-medium {
+    background-color: hsl(43 96% 56%);
+  }
+
+  .strength-strong {
+    color: hsl(142 71% 45%);
+  }
+
+  .signup-password-meter-fill.strength-strong {
+    background-color: hsl(142 71% 45%);
+  }
+
+  .signup-plan-grid {
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .signup-plan-option {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    padding: 0.8rem 0.9rem;
+    cursor: pointer;
+    background: var(--color-background);
+  }
+
+  .signup-plan-option input {
+    margin-top: 0.2rem;
+  }
+
+  .signup-plan-option:has(input:checked) {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 15%, transparent);
+  }
+
+  .signup-plan-option.is-selected {
+    background: color-mix(in srgb, var(--color-primary) 5%, var(--color-background) 95%);
+  }
+
+  .signup-plan-option span {
+    display: grid;
+    gap: 0.2rem;
+  }
+
+  .signup-plan-option strong {
+    color: var(--color-foreground);
+    font-size: 0.92rem;
+  }
+
+  .signup-plan-summary {
+    color: color-mix(in srgb, var(--color-foreground) 72%, var(--color-border) 28%);
+    line-height: 1.4;
+  }
+
+  .signup-plan-expand {
+    display: block;
+    margin-top: 0.35rem;
+    color: color-mix(in srgb, var(--color-foreground) 82%, var(--color-primary) 18%);
+    line-height: 1.45;
+    opacity: 0;
+    transform: translateY(0.35rem);
+    animation: signup-plan-expand-in 0.28s ease forwards;
+  }
+
+  .signup-checkbox {
+    display: inline-flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 0.25rem;
+    color: var(--color-foreground);
+    font-size: 0.9rem;
+  }
+
+  .signup-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.7rem;
+    margin-top: auto;
+    padding-top: 1.35rem;
+  }
+
+  .signup-btn-primary,
+  .signup-btn-secondary {
+    min-width: 8.3rem;
+    padding: 0.7rem 1.05rem;
+  }
+
+  .signup-btn-secondary {
+    border: 1px solid var(--color-border);
+    background: var(--color-background);
+    color: var(--color-foreground);
+    transition: border-color 0.22s ease, background-color 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+  }
+
+  .signup-btn-secondary:hover,
+  .signup-btn-secondary:focus-visible {
+    border-color: color-mix(in srgb, var(--color-foreground) 28%, var(--color-border) 72%);
+    background: color-mix(in srgb, var(--color-surface-1) 75%, var(--color-background) 25%);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .signup-btn-primary {
+    transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
+  }
+
+  .signup-btn-primary:hover,
+  .signup-btn-primary:focus-visible {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+    filter: saturate(1.05);
+  }
+
+  .signup-success {
+    margin-top: 2.5rem;
+  }
+
+  .signup-success h3 {
+    margin: 0;
+    color: var(--color-foreground);
+    font-size: 1.35rem;
+  }
+
+  .signup-success p {
+    margin: 0.8rem 0 0;
+    color: color-mix(in srgb, var(--color-foreground) 74%, var(--color-border) 26%);
+    line-height: 1.6;
+    max-width: 32rem;
+  }
+
+  @keyframes signup-feature-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes signup-review-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.55rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes signup-plan-expand-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.35rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 980px) {
+    .signup-panel {
+      grid-template-columns: 1fr;
+    }
+
+    .signup-left {
+      min-height: 35vh;
+      padding: 1.4rem 1.4rem 1.1rem;
+    }
+
+    .signup-right {
+      min-height: 65vh;
+      padding-top: 1rem;
+    }
+
+    .signup-progress-steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      row-gap: 0.5rem;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .signup-grid.two-col {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .section-padding {
+    padding: 4rem 1.25rem;
+  }
+
+  .section-head {
+    margin-bottom: 1.25rem;
+    max-width: 44rem;
+  }
+
+  .section-head p {
+    margin-top: 0.45rem;
+    color: color-mix(in srgb, var(--color-foreground) 72%, var(--color-border) 28%);
+    line-height: 1.6;
+  }
+
+  @media (min-width: 640px) {
+    .section-padding {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+}

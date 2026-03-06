@@ -1,0 +1,21 @@
+{
+  "name": "Fishin Leads",
+  "short_name": "FishinLeads",
+  "description": "Custom CRM software built for modern businesses.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/Images/brand/fishinleads_favicon_64.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    },
+    {
+      "src": "/Images/brand/fishinleads_favicon_large.png",
+      "sizes": "250x250",
+      "type": "image/png"
+    }
+  ]
+}

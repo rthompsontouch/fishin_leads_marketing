@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import OutcomesSection from "../components/OutcomesSection";
+import TrustedByGrowthTeamsSection from "../components/TrustedByGrowthTeamsSection";
 import { openSignupPanel } from "../lib/signupPanelEvents";
 
 const DISPLAY_MS = 8000;
@@ -32,9 +34,9 @@ const heroSteps = [
     subtitle:
       "Protect customer data, lock down access, and keep operations resilient with role-based permissions, audits, and secure architecture.",
     cards: [
-      { icon: "/globe.svg", title: "Access Control", detail: "Granular permissions per team and client." },
-      { icon: "/file.svg", title: "Activity Logs", detail: "Visibility into critical account actions." },
-      { icon: "/window.svg", title: "Data Reliability", detail: "Built to keep your system dependable." },
+      { icon: "/images/icons/access_control.svg", title: "Access Control", detail: "Granular permissions per team and client." },
+      { icon: "/images/icons/activity_logs.svg", title: "Activity Logs", detail: "Visibility into critical account actions." },
+      { icon: "/images/icons/data_reliability.svg", title: "Data Reliability", detail: "Built to keep your system dependable." },
     ],
   },
 ];
@@ -42,6 +44,7 @@ const heroSteps = [
 export default function Home() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
+  const [securityVisibleCount, setSecurityVisibleCount] = useState(0);
 
   useEffect(() => {
     const exitTimer = setTimeout(() => {
@@ -60,6 +63,33 @@ export default function Home() {
   }, [activeIndex]);
 
   const activeStep = useMemo(() => heroSteps[activeIndex], [activeIndex]);
+  const isSecurityStep = activeStep.title === "Security is our top priority";
+
+  useEffect(() => {
+    if (!isSecurityStep) {
+      setSecurityVisibleCount(0);
+      return;
+    }
+
+    setSecurityVisibleCount(1);
+
+    const revealTimer = setInterval(() => {
+      setSecurityVisibleCount((current) => {
+        const next = current + 1;
+
+        if (next >= activeStep.cards.length) {
+          clearInterval(revealTimer);
+          return activeStep.cards.length;
+        }
+
+        return next;
+      });
+    }, 650);
+
+    return () => {
+      clearInterval(revealTimer);
+    };
+  }, [isSecurityStep, activeStep]);
 
   return (
     <>
@@ -71,15 +101,15 @@ export default function Home() {
               <h1 className="hero-title">{activeStep.title}</h1>
               <div className="hero-subgroup">
                 <p className="hero-subtitle">{activeStep.subtitle}</p>
-                <div className="flex flex-wrap items-center gap-3 pt-2">
+                <div className="flex flex-wrap items-center gap-3 pt-5">
                   <button
                     type="button"
                     onClick={openSignupPanel}
-                    className="btn btn-primary btn-shimmer px-5 py-2.5 no-underline text-sm"
+                    className="btn btn-primary btn-shimmer px-6 py-3 no-underline text-base"
                   >
                     Try Free
                   </button>
-                  <a href="#features" className="btn btn-outline px-5 py-2.5 no-underline text-sm">
+                  <a href="#features" className="btn btn-outline px-6 py-3 no-underline text-base">
                     Explore Features
                   </a>
                 </div>
@@ -87,19 +117,38 @@ export default function Home() {
             </div>
 
             <div className="hero-visual">
-              {activeStep.cards.map((card, index) => (
-                <div
-                  key={card.title}
-                  className="hero-card"
-                  style={{ "--card-delay": `${0.95 + index * 0.2}s` }}
-                >
-                  <img src={card.icon} alt="" aria-hidden="true" className="h-5 w-5" />
-                  <div>
-                    <p className="hero-card-title">{card.title}</p>
-                    <p className="hero-card-detail">{card.detail}</p>
-                  </div>
+              {isSecurityStep ? (
+                <div className="hero-security-grid">
+                  {activeStep.cards.map((card, index) => (
+                    <article
+                      key={card.title}
+                      className={`hero-security-item hero-security-item-${index + 1} ${index < securityVisibleCount ? "is-visible" : ""}`}
+                    >
+                      <p className="hero-security-title">{card.title}</p>
+                      <img
+                        src={card.icon}
+                        alt=""
+                        aria-hidden="true"
+                        className="hero-security-icon"
+                      />
+                    </article>
+                  ))}
                 </div>
-              ))}
+              ) : (
+                activeStep.cards.map((card, index) => (
+                  <div
+                    key={card.title}
+                    className="hero-card"
+                    style={{ "--card-delay": `${0.95 + index * 0.2}s` }}
+                  >
+                    <img src={card.icon} alt="" aria-hidden="true" className="h-5 w-5" />
+                    <div>
+                      <p className="hero-card-title">{card.title}</p>
+                      <p className="hero-card-detail">{card.detail}</p>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
@@ -111,43 +160,9 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="features" className="section-padding">
-        <div className="mx-auto w-full max-w-7xl">
-          <div className="section-head">
-            <h2>Outcomes that actually move revenue</h2>
-            <p>Start with clear business impact. We can replace these with polished final copy next.</p>
-          </div>
-          <div className="grid gap-4 md:grid-cols-3">
-            <article className="card p-6">
-              <h3>Launch client CRM faster</h3>
-              <p>Reusable workflows mean no full rebuild for every new client deployment.</p>
-            </article>
-            <article className="card p-6">
-              <h3>Convert more leads</h3>
-              <p>Centralized follow-up and automation reduce missed opportunities and delays.</p>
-            </article>
-            <article className="card p-6">
-              <h3>Operate from one system</h3>
-              <p>Pipeline, comms, reporting, and permissions all in one secure workspace.</p>
-            </article>
-          </div>
-        </div>
-      </section>
+      <OutcomesSection />
 
-      <section className="section-padding bg-[color:var(--color-surface-1)]">
-        <div className="mx-auto w-full max-w-7xl">
-          <div className="section-head">
-            <h2>Trusted by growth teams</h2>
-            <p>Social proof block placeholder — logos, review highlights, and quick stats.</p>
-          </div>
-          <div className="grid gap-4 md:grid-cols-4">
-            <div className="card p-5 text-center"><strong>+38%</strong><p>Lead response speed</p></div>
-            <div className="card p-5 text-center"><strong>+27%</strong><p>Close-rate lift</p></div>
-            <div className="card p-5 text-center"><strong>45%</strong><p>Less manual ops work</p></div>
-            <div className="card p-5 text-center"><strong>2.1x</strong><p>Faster onboarding</p></div>
-          </div>
-        </div>
-      </section>
+      <TrustedByGrowthTeamsSection />
 
       <section className="section-padding">
         <div className="mx-auto w-full max-w-7xl">

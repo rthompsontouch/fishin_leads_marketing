@@ -168,7 +168,7 @@ export default function SignupPanel() {
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState("basic");
-  const [validatedStepIndex, setValidatedStepIndex] = useState(null);
+  const [attemptedStepTitle, setAttemptedStepTitle] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -225,7 +225,7 @@ export default function SignupPanel() {
       setSubmitted(false);
       setStep(0);
       setSelectedPlan("basic");
-      setValidatedStepIndex(null);
+      setAttemptedStepTitle("");
       setPasswordInput("");
       setShowPassword(false);
       setShowConfirmPassword(false);
@@ -290,15 +290,16 @@ export default function SignupPanel() {
   }, [step, isOpen, flowSteps, clearErrors]);
 
   const closePanel = () => {
-    setValidatedStepIndex(null);
+    setAttemptedStepTitle("");
     setCopyStatus("");
     setReviewIndex(0);
     setIsOpen(false);
   };
 
   const handleNext = async () => {
-    const currentStepFields = flowSteps[step].fields;
-    setValidatedStepIndex(step);
+    const currentStep = flowSteps[step];
+    const currentStepFields = currentStep.fields;
+    setAttemptedStepTitle(currentStep.title);
     const isValid = await trigger(currentStepFields);
 
     if (!isValid) {
@@ -307,19 +308,20 @@ export default function SignupPanel() {
 
     const nextStep = Math.min(step + 1, flowSteps.length - 1);
     clearErrors(flowSteps[nextStep].fields);
-    setValidatedStepIndex(null);
+    setAttemptedStepTitle("");
     setStep(nextStep);
   };
 
   const handleBack = () => {
     const previousStep = Math.max(step - 1, 0);
-    setValidatedStepIndex(null);
+    setAttemptedStepTitle("");
     setStep(previousStep);
   };
 
   const handleCompleteSignup = async () => {
-    const currentStepFields = flowSteps[step].fields;
-    setValidatedStepIndex(step);
+    const currentStep = flowSteps[step];
+    const currentStepFields = currentStep.fields;
+    setAttemptedStepTitle(currentStep.title);
     const isValid = await trigger(currentStepFields);
 
     if (!isValid) {
@@ -340,7 +342,7 @@ export default function SignupPanel() {
     setStep(0);
     setSubmitted(false);
     setSelectedPlan("basic");
-    setValidatedStepIndex(null);
+    setAttemptedStepTitle("");
     setPasswordInput("");
     setShowPassword(false);
     setShowConfirmPassword(false);
@@ -350,7 +352,7 @@ export default function SignupPanel() {
   };
 
   const isFieldErrorVisible = (fieldName) => {
-    return Boolean(errors[fieldName]) && validatedStepIndex === step;
+    return Boolean(errors[fieldName]) && attemptedStepTitle === activeStep.title;
   };
 
   const handleGeneratePassword = () => {
@@ -386,9 +388,9 @@ export default function SignupPanel() {
           <Image
             src="/images/brand/fishinleads_logo.png"
             alt="Fishin Leads"
-            width={260}
-            height={62}
-            className="mb-2 mx-auto w-[260px] max-w-full h-auto"
+            width={460}
+            height={109}
+            className="-mt-2 mb-5 mx-auto w-[460px] max-w-full h-auto"
           />
           <p className="signup-kicker">Welcome to Fishin Leads</p>
           <h2 className="signup-left-title">Thanks for signing up with us.</h2>
@@ -412,6 +414,7 @@ export default function SignupPanel() {
 
           <div className="signup-review-carousel" aria-live="polite">
             <article className="signup-review-card" key={`${reviews[reviewIndex].author}-${reviewIndex}`}>
+              <p className="signup-review-stars" aria-label="5 out of 5 stars">★★★★★</p>
               <p className="signup-review-quote">“{reviews[reviewIndex].quote}”</p>
               <p className="signup-review-author">{reviews[reviewIndex].author}</p>
               <p className="signup-review-role">{reviews[reviewIndex].role}</p>

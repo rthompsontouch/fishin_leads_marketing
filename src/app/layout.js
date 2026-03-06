@@ -16,6 +16,29 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Fishin Leads",
   description: "Custom CRM software built for modern businesses.",
+  manifest: "/site.webmanifest",
+  icons: {
+    icon: [
+      {
+        url: "/Images/brand/fishinleads_favicon_64.png",
+        sizes: "64x64",
+        type: "image/png",
+      },
+      {
+        url: "/Images/brand/fishinleads_favicon_large.png",
+        sizes: "250x250",
+        type: "image/png",
+      },
+    ],
+    shortcut: ["/Images/brand/fishinleads_favicon_64.png"],
+    apple: [
+      {
+        url: "/Images/brand/fishinleads_favicon_large.png",
+        sizes: "250x250",
+        type: "image/png",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({ children }) {

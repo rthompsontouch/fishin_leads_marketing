@@ -1,4 +1,15 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Fishin Leads **marketing** site (Next.js).
+
+## Environment variables
+
+Copy `.env.example` to `.env.local` and set:
+
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| `FISHIN_LEADS_MARKETING_SIGNUP_URL` | Yes (prod) | Supabase Edge Function `marketing-crm-signup` URL (used by `/api/signup`). |
+| `NEXT_PUBLIC_CRM_APP_URL` | Recommended | CRM app origin (no trailing slash). On successful signup, users are redirected to `{URL}/login?email=...`. If omitted, signup shows the in-panel success screen with webhook + API key. |
+
+`NEXT_PUBLIC_*` vars are baked in at **build** time — set them in Vercel and redeploy after changing.
 
 ## Getting Started
 

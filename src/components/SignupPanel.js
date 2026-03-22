@@ -28,13 +28,24 @@ const steps = [
   },
 ];
 
-const checkoutStep = {
-  title: "Checkout",
-  subtitle: "Add billing details to activate your paid workspace.",
-  fields: ["cardName", "cardNumber", "expiry", "cvc", "billingZip"],
-};
+const SIGNUP_STORAGE_KEY = "fishin-leads-crm-signup";
 
 const REVIEW_INTERVAL_MS = 7000;
+
+/**
+ * After signup, send users to the CRM app (e.g. app subdomain on Vercel).
+ * Set NEXT_PUBLIC_CRM_APP_URL in Vercel (no trailing slash), e.g. https://crm.yourdomain.com
+ */
+function buildCrmPostSignupRedirectUrl(email) {
+  const raw =
+    typeof process !== "undefined" && process.env.NEXT_PUBLIC_CRM_APP_URL
+      ? String(process.env.NEXT_PUBLIC_CRM_APP_URL).trim()
+      : "";
+  if (!raw) return "";
+  const base = raw.replace(/\/$/, "");
+  const q = email ? `?email=${encodeURIComponent(email)}` : "";
+  return `${base}/login${q}`;
+}
 
 function generateSecurePassword(length = 16) {
   const upper = "ABCDEFGHJKLMNPQRSTUVWXYZ";
@@ -167,6 +178,8 @@ export default function SignupPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [signupResult, setSignupResult] = useState(null);
+  const [submitError, setSubmitError] = useState("");
   const [selectedPlan, setSelectedPlan] = useState("basic");
   const [attemptedStepTitle, setAttemptedStepTitle] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
@@ -178,10 +191,7 @@ export default function SignupPanel() {
   const reviewTimerRef = useRef(null);
   const lastReviewSwapAtRef = useRef(0);
 
-  const flowSteps = useMemo(
-    () => (selectedPlan === "freemium" ? steps : [...steps, checkoutStep]),
-    [selectedPlan],
-  );
+  const flowSteps = useMemo(() => steps, []);
 
   const {
     register,
@@ -206,11 +216,6 @@ export default function SignupPanel() {
       email: "",
       password: "",
       confirmPassword: "",
-      cardName: "",
-      cardNumber: "",
-      expiry: "",
-      cvc: "",
-      billingZip: "",
     },
   });
 
@@ -223,6 +228,7 @@ export default function SignupPanel() {
   useEffect(() => {
     const openPanel = () => {
       setSubmitted(false);
+      setSignupResult(null);
       setStep(0);
       setSelectedPlan("basic");
       setAttemptedStepTitle("");
@@ -296,6 +302,17 @@ export default function SignupPanel() {
     setIsOpen(false);
   };
 
+  const getIndustryLabel = (value) => {
+    return String(value || "")
+      .split("-")
+      .map((word) => (word ? word.charAt(0).toUpperCase() + word.slice(1) : ""))
+      .join(" ");
+  };
+
+  const getSelectedPlanLabel = (value) => {
+    return plans.find((plan) => plan.value === value)?.label || value;
+  };
+
   const handleNext = async () => {
     const currentStep = flowSteps[step];
     const currentStepFields = currentStep.fields;
@@ -328,19 +345,76 @@ export default function SignupPanel() {
       return;
     }
 
+    setSubmitError("");
     setIsCompleting(true);
-    await new Promise((resolve) => {
-      setTimeout(resolve, 500);
-    });
 
-    setSubmitted(true);
-    setIsCompleting(false);
+    try {
+      const values = getValues();
+      const response = await fetch("/api/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          first_name: values.firstName,
+          last_name: values.lastName,
+          phone: values.phone,
+          company_name: values.companyName,
+          industry: getIndustryLabel(values.industry) || values.industry,
+          company_size: values.companySize,
+          website: values.website,
+          tier: getSelectedPlanLabel(values.plan),
+          email: values.email,
+          password: values.password,
+          integration: {
+            name: "Website Form",
+            source_label: "Website",
+            default_status: "New",
+          },
+        }),
+      });
+
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(result?.error || "We could not submit your request. Please try again.");
+      }
+
+      setSignupResult(result);
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(
+          SIGNUP_STORAGE_KEY,
+          JSON.stringify({
+            api_key: result.api_key,
+            webhook_url: result.webhook_url,
+            user_id: result.user_id,
+            integration_id: result.integration_id,
+            email: values.email,
+            tier: getSelectedPlanLabel(values.plan),
+          }),
+        );
+      }
+
+      const crmRedirect = buildCrmPostSignupRedirectUrl(values.email);
+      if (typeof window !== "undefined" && crmRedirect) {
+        window.location.assign(crmRedirect);
+        return;
+      }
+
+      setSubmitted(true);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "We could not submit your request. Please try again.");
+    } finally {
+      setIsCompleting(false);
+    }
   };
 
   const startFresh = () => {
     reset();
     setStep(0);
     setSubmitted(false);
+    setSignupResult(null);
+    setSubmitError("");
     setSelectedPlan("basic");
     setAttemptedStepTitle("");
     setPasswordInput("");
@@ -466,6 +540,7 @@ export default function SignupPanel() {
             >
               <h3 className="signup-form-title">{activeStep.title}</h3>
               <p className="signup-form-subtitle">{activeStep.subtitle}</p>
+              {submitError ? <p className="signup-submit-error">{submitError}</p> : null}
 
               {step === 0 && (
                 <div className="signup-grid two-col">
@@ -579,7 +654,7 @@ export default function SignupPanel() {
                           required: "Please choose a plan tier.",
                           onChange: (event) => {
                             setSelectedPlan(event.target.value);
-                            clearErrors(["email", "password", "confirmPassword", "cardName", "cardNumber", "expiry", "cvc", "billingZip"]);
+                            clearErrors(["email", "password", "confirmPassword"]);
                           },
                         })}
                       />
@@ -708,67 +783,6 @@ export default function SignupPanel() {
                 </div>
               )}
 
-              {activeStep.title === "Checkout" && (
-                <div className="signup-grid two-col">
-                  <label className="signup-field two-col-span">
-                    <span>Name on card <b>*</b></span>
-                    <input
-                      className={isFieldErrorVisible("cardName") ? "is-invalid" : ""}
-                      aria-invalid={isFieldErrorVisible("cardName") ? "true" : "false"}
-                      {...register("cardName", { required: "Name on card is required." })}
-                    />
-                    {isFieldErrorVisible("cardName") ? <em className="signup-error">{errors.cardName.message}</em> : null}
-                  </label>
-
-                  <label className="signup-field two-col-span">
-                    <span>Card number <b>*</b></span>
-                    <input
-                      className={isFieldErrorVisible("cardNumber") ? "is-invalid" : ""}
-                      aria-invalid={isFieldErrorVisible("cardNumber") ? "true" : "false"}
-                      {...register("cardNumber", {
-                        required: "Card number is required.",
-                        minLength: { value: 12, message: "Enter a valid card number." },
-                      })}
-                    />
-                    {isFieldErrorVisible("cardNumber") ? <em className="signup-error">{errors.cardNumber.message}</em> : null}
-                  </label>
-
-                  <label className="signup-field">
-                    <span>Expiry <b>*</b></span>
-                    <input
-                      placeholder="MM/YY"
-                      className={isFieldErrorVisible("expiry") ? "is-invalid" : ""}
-                      aria-invalid={isFieldErrorVisible("expiry") ? "true" : "false"}
-                      {...register("expiry", { required: "Expiry is required." })}
-                    />
-                    {isFieldErrorVisible("expiry") ? <em className="signup-error">{errors.expiry.message}</em> : null}
-                  </label>
-
-                  <label className="signup-field">
-                    <span>CVC <b>*</b></span>
-                    <input
-                      className={isFieldErrorVisible("cvc") ? "is-invalid" : ""}
-                      aria-invalid={isFieldErrorVisible("cvc") ? "true" : "false"}
-                      {...register("cvc", {
-                        required: "CVC is required.",
-                        minLength: { value: 3, message: "Enter a valid CVC." },
-                      })}
-                    />
-                    {isFieldErrorVisible("cvc") ? <em className="signup-error">{errors.cvc.message}</em> : null}
-                  </label>
-
-                  <label className="signup-field two-col-span">
-                    <span>Billing ZIP / Postal code <b>*</b></span>
-                    <input
-                      className={isFieldErrorVisible("billingZip") ? "is-invalid" : ""}
-                      aria-invalid={isFieldErrorVisible("billingZip") ? "true" : "false"}
-                      {...register("billingZip", { required: "Billing ZIP is required." })}
-                    />
-                    {isFieldErrorVisible("billingZip") ? <em className="signup-error">{errors.billingZip.message}</em> : null}
-                  </label>
-                </div>
-              )}
-
               <div className="signup-actions">
                 <button type="button" className="btn signup-btn-secondary" onClick={step === 0 ? closePanel : handleBack}>
                   {step === 0 ? "Cancel" : "Back"}
@@ -787,10 +801,22 @@ export default function SignupPanel() {
             </form>
           ) : (
             <div className="signup-success">
-              <h3>Your account request is in.</h3>
+              <h3>Your CRM workspace is ready.</h3>
               <p>
-                Awesome choice. We’ll send setup details and onboarding instructions to your inbox shortly.
+                Your account and website integration were created successfully. We saved the CRM connection details in your browser so you can use them in the next setup step.
               </p>
+              {signupResult ? (
+                <div className="signup-result-card">
+                  <div className="signup-result-row">
+                    <span>Webhook URL</span>
+                    <strong>{signupResult.webhook_url}</strong>
+                  </div>
+                  <div className="signup-result-row">
+                    <span>API key</span>
+                    <strong>{signupResult.api_key}</strong>
+                  </div>
+                </div>
+              ) : null}
               <div className="signup-actions">
                 <button type="button" className="btn signup-btn-secondary" onClick={startFresh}>
                   Start Another

@@ -1007,6 +1007,17 @@
     line-height: 1.55;
   }
 
+  .signup-submit-error {
+    margin: -0.4rem 0 1rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 0.6rem;
+    border: 1px solid color-mix(in srgb, var(--color-danger) 36%, transparent);
+    background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+    color: color-mix(in srgb, var(--color-danger) 88%, var(--color-foreground) 12%);
+    font-size: 0.84rem;
+    font-weight: 600;
+  }
+
   .signup-field span b {
     color: var(--color-danger);
   }
@@ -1325,6 +1336,36 @@
     color: color-mix(in srgb, var(--color-foreground) 74%, var(--color-border) 26%);
     line-height: 1.6;
     max-width: 32rem;
+  }
+
+  .signup-result-card {
+    margin-top: 1.15rem;
+    display: grid;
+    gap: 0.7rem;
+    padding: 1rem;
+    border: 1px solid color-mix(in srgb, var(--color-border) 78%, transparent);
+    border-radius: 0.85rem;
+    background: color-mix(in srgb, var(--color-surface-1) 72%, var(--color-background) 28%);
+  }
+
+  .signup-result-row {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .signup-result-row span {
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-foreground) 60%, var(--color-border) 40%);
+  }
+
+  .signup-result-row strong {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    word-break: break-word;
+    color: var(--color-foreground);
   }
 
   @keyframes signup-feature-in {

@@ -42,7 +42,8 @@ function buildCrmPostSignupRedirectUrl(email) {
       ? String(process.env.NEXT_PUBLIC_CRM_APP_URL).trim()
       : "";
   if (!raw) return "";
-  const withProtocol = /^[a-z][a-z\d+\-.]*:\/\//i.test(raw) ? raw : `https://${raw}`;
+  const normalizedRaw = raw.replace(/^\/+/, "");
+  const withProtocol = /^[a-z][a-z\d+\-.]*:\/\//i.test(normalizedRaw) ? normalizedRaw : `https://${normalizedRaw}`;
 
   let parsed;
   try {

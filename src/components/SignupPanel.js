@@ -29,6 +29,7 @@ const steps = [
 ];
 
 const SIGNUP_STORAGE_KEY = "fishin-leads-crm-signup";
+const DEFAULT_CRM_APP_URL = "https://www.app.fishinleads.com";
 
 const REVIEW_INTERVAL_MS = 7000;
 
@@ -40,7 +41,7 @@ function buildCrmPostSignupRedirectUrl(email) {
   const raw =
     typeof process !== "undefined" && process.env.NEXT_PUBLIC_CRM_APP_URL
       ? String(process.env.NEXT_PUBLIC_CRM_APP_URL).trim()
-      : "";
+      : DEFAULT_CRM_APP_URL;
   if (!raw) return "";
   const normalizedRaw = raw.replace(/^\/+/, "");
   const withProtocol = /^[a-z][a-z\d+\-.]*:\/\//i.test(normalizedRaw) ? normalizedRaw : `https://${normalizedRaw}`;
@@ -409,7 +410,10 @@ export default function SignupPanel() {
 
       const crmRedirect = buildCrmPostSignupRedirectUrl(values.email);
       if (typeof window !== "undefined" && crmRedirect) {
-        window.location.assign(crmRedirect);
+        const absoluteRedirect = /^https?:\/\//i.test(crmRedirect)
+          ? crmRedirect
+          : `https://${crmRedirect.replace(/^\/+/, "")}`;
+        window.location.assign(absoluteRedirect);
         return;
       }
 

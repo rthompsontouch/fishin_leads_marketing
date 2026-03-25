@@ -47,8 +47,10 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar />
-        <main>{children}</main>
+        <div className="site-navbar-wrap">
+          <Navbar />
+        </div>
+        <main className="site-main">{children}</main>
         <SignupPanel />
       </body>
     </html>

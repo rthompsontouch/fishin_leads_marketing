@@ -1,106 +1,83 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import BrandsTicker from "../components/BrandsTicker";
 import OutcomesSection from "../components/OutcomesSection";
 import TrustedByGrowthTeamsSection from "../components/TrustedByGrowthTeamsSection";
 import { openSignupPanel } from "../lib/signupPanelEvents";
 
-const DISPLAY_MS = 8000;
-const EXIT_MS = 700;
+const FIRST_VISUAL_INTRO_MS = 1000;
+const FIRST_VISUAL_STEP_MS = 5000;
 
-const heroSteps = [
-  {
-    title: "The CRM that works for you",
-    subtitle:
-      "Stop rebuilding systems for every client. Launch one powerful workflow engine built for agencies, teams, and modern service businesses.",
-    cards: [
-      { icon: "/globe.svg", title: "Pipeline Control", detail: "Track every lead from click to close." },
-      { icon: "/window.svg", title: "Unified Inbox", detail: "Calls, forms, and SMS in one view." },
-      { icon: "/file.svg", title: "Client Playbooks", detail: "Reusable automations for each niche." },
-    ],
-  },
-  {
-    title: "Affordable and convenient",
-    subtitle:
-      "Get enterprise-level CRM capabilities without enterprise-level complexity. One platform for your clients and your internal growth engine.",
-    cards: [
-      { icon: "/file.svg", title: "Simple Pricing", detail: "Scale seats and features as you grow." },
-      { icon: "/next.svg", title: "Fast Setup", detail: "Go live quickly with proven templates." },
-      { icon: "/window.svg", title: "Zero Chaos", detail: "No more scattered tools or manual busywork." },
-    ],
-  },
-  {
-    title: "Security is our top priority",
-    subtitle:
-      "Protect customer data, lock down access, and keep operations resilient with role-based permissions, audits, and secure architecture.",
-    cards: [
-      { icon: "/images/icons/access_control.svg", title: "Access Control", detail: "Granular permissions per team and client." },
-      { icon: "/images/icons/activity_logs.svg", title: "Activity Logs", detail: "Visibility into critical account actions." },
-      { icon: "/images/icons/data_reliability.svg", title: "Data Reliability", detail: "Built to keep your system dependable." },
-    ],
-  },
-];
+const HERO_CONTENT = {
+  title: "The CRM that works for you",
+  subtitle:
+    "Stop rebuilding systems for every client. Launch one powerful workflow engine built for agencies, teams, and modern service businesses.",
+  visuals: [
+    { title: "1. Integrate Your Websites Forms", image: "/images/hero/first_slide/integrations.png" },
+    { title: "2. Capture The Leads", image: "/images/hero/first_slide/lead_capture.png" },
+    { title: "3. Convert Leads To Customers", image: "/images/hero/first_slide/convert.png" },
+  ],
+};
 
 export default function Home() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isExiting, setIsExiting] = useState(false);
-  const [securityVisibleCount, setSecurityVisibleCount] = useState(0);
+  const [firstVisualIndex, setFirstVisualIndex] = useState(0);
+  const [showFirstVisual, setShowFirstVisual] = useState(false);
+
+  const getVisualPosition = (index, active, total) => {
+    const leftIndex = (active - 1 + total) % total;
+    const rightIndex = (active + 1) % total;
+
+    if (index === active) return "is-front";
+    if (index === leftIndex) return "is-back-left";
+    if (index === rightIndex) return "is-back-right";
+    return "is-hidden";
+  };
 
   useEffect(() => {
-    const exitTimer = setTimeout(() => {
-      setIsExiting(true);
-    }, DISPLAY_MS);
+    setShowFirstVisual(false);
+    setFirstVisualIndex(0);
 
-    const nextTimer = setTimeout(() => {
-      setActiveIndex((prev) => (prev + 1) % heroSteps.length);
-      setIsExiting(false);
-    }, DISPLAY_MS + EXIT_MS);
+    let rotate = null;
 
-    return () => {
-      clearTimeout(exitTimer);
-      clearTimeout(nextTimer);
-    };
-  }, [activeIndex]);
+    const showCarousel = setTimeout(() => {
+      setShowFirstVisual(true);
+    }, FIRST_VISUAL_INTRO_MS);
 
-  const activeStep = useMemo(() => heroSteps[activeIndex], [activeIndex]);
-  const isSecurityStep = activeStep.title === "Security is our top priority";
-
-  useEffect(() => {
-    if (!isSecurityStep) {
-      setSecurityVisibleCount(0);
-      return;
-    }
-
-    setSecurityVisibleCount(1);
-
-    const revealTimer = setInterval(() => {
-      setSecurityVisibleCount((current) => {
-        const next = current + 1;
-
-        if (next >= activeStep.cards.length) {
-          clearInterval(revealTimer);
-          return activeStep.cards.length;
-        }
-
-        return next;
-      });
-    }, 650);
+    const startRotate = setTimeout(() => {
+      rotate = setInterval(() => {
+        setFirstVisualIndex((prev) => (prev + 1) % HERO_CONTENT.visuals.length);
+      }, FIRST_VISUAL_STEP_MS);
+    }, FIRST_VISUAL_INTRO_MS);
 
     return () => {
-      clearInterval(revealTimer);
+      clearTimeout(showCarousel);
+      clearTimeout(startRotate);
+      if (rotate) clearInterval(rotate);
     };
-  }, [isSecurityStep, activeStep]);
+  }, []);
 
   return (
     <>
       <section className="hero-root">
-        <div className="hero-overlay" />
-        <div className="hero-content mx-auto w-full max-w-7xl px-5 sm:px-8">
-          <div className={`hero-frame ${isExiting ? "is-exiting" : "is-entering"}`} key={activeStep.title}>
+        <div className="hero-bg" aria-hidden="true">
+          <Image
+            src="/Images/hero/hero.png?v=20260322"
+            alt=""
+            fill
+            priority
+            className="hero-bg-image"
+            sizes="100vw"
+          />
+        </div>
+        <div className="hero-shell">
+          <div className="hero-content mx-auto w-full max-w-7xl px-5 sm:px-8">
+          <div className="hero-frame is-entering">
             <div className="hero-copy">
-              <h1 className="hero-title">{activeStep.title}</h1>
+              <h1 className="hero-title">{HERO_CONTENT.title}.</h1>
               <div className="hero-subgroup">
-                <p className="hero-subtitle">{activeStep.subtitle}</p>
+                <p className="hero-subtitle">{HERO_CONTENT.subtitle}</p>
                 <div className="flex flex-wrap items-center gap-3 pt-5">
                   <button
                     type="button"
@@ -109,54 +86,43 @@ export default function Home() {
                   >
                     Try Free
                   </button>
-                  <a href="#features" className="btn btn-outline px-6 py-3 no-underline text-base">
+                  <a href="#features" className="btn btn-outline hero-outline-btn px-6 py-3 no-underline text-base">
                     Explore Features
                   </a>
                 </div>
               </div>
             </div>
 
-            <div className="hero-visual">
-              {isSecurityStep ? (
-                <div className="hero-security-grid">
-                  {activeStep.cards.map((card, index) => (
-                    <article
-                      key={card.title}
-                      className={`hero-security-item hero-security-item-${index + 1} ${index < securityVisibleCount ? "is-visible" : ""}`}
-                    >
-                      <p className="hero-security-title">{card.title}</p>
-                      <img
-                        src={card.icon}
-                        alt=""
-                        aria-hidden="true"
-                        className="hero-security-icon"
-                      />
-                    </article>
-                  ))}
+            <div className="hero-visual hero-visual--cards">
+              <div className={`hero-product-sequence ${showFirstVisual ? "is-visible" : ""}`} key={HERO_CONTENT.title}>
+                <p className="hero-product-caption">{HERO_CONTENT.visuals[firstVisualIndex]?.title}</p>
+                <div className="hero-carousel-stack">
+                  {HERO_CONTENT.visuals.map((visual, index) => {
+                    const position = getVisualPosition(index, firstVisualIndex, HERO_CONTENT.visuals.length);
+
+                    return (
+                      <article key={visual.title} className={`hero-carousel-card ${position}`}>
+                        <div className="hero-product-shot-wrap">
+                          <Image
+                            src={visual.image}
+                            alt={`${visual.title} product view`}
+                            width={1200}
+                            height={700}
+                            className="hero-product-shot"
+                            sizes="(max-width: 1024px) 100vw, 42rem"
+                            priority={index === 0}
+                          />
+                        </div>
+                      </article>
+                    );
+                  })}
                 </div>
-              ) : (
-                activeStep.cards.map((card, index) => (
-                  <div
-                    key={card.title}
-                    className="hero-card"
-                    style={{ "--card-delay": `${0.95 + index * 0.2}s` }}
-                  >
-                    <img src={card.icon} alt="" aria-hidden="true" className="h-5 w-5" />
-                    <div>
-                      <p className="hero-card-title">{card.title}</p>
-                      <p className="hero-card-detail">{card.detail}</p>
-                    </div>
-                  </div>
-                ))
-              )}
+              </div>
             </div>
           </div>
-
-          <div className="hero-dots" aria-label="Hero steps">
-            {heroSteps.map((step, index) => (
-              <span key={step.title} className={`hero-dot ${index === activeIndex ? "is-active" : ""}`} />
-            ))}
           </div>
+
+          <BrandsTicker variant="hero" />
         </div>
       </section>
 

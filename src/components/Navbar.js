@@ -5,8 +5,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { openSignupPanel } from "../lib/signupPanelEvents";
 
-const SCROLL_TRIGGER_PX = 24;
-
 const navItems = [
   { href: "#features", label: "Features" },
   { href: "#pricing", label: "Pricing" },
@@ -14,21 +12,7 @@ const navItems = [
 ];
 
 export default function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => {
-      setIsScrolled(window.scrollY > SCROLL_TRIGGER_PX);
-    };
-
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-    };
-  }, []);
 
   useEffect(() => {
     if (!isMobileOpen) {
@@ -49,7 +33,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className={`navbar ${isScrolled ? "navbar-scrolled" : "navbar-top"}`}>
+      <header className="navbar">
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-5 sm:px-8">
           <Link
             href="/"

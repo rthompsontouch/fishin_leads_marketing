@@ -42,7 +42,18 @@ function buildCrmPostSignupRedirectUrl(email) {
       ? String(process.env.NEXT_PUBLIC_CRM_APP_URL).trim()
       : "";
   if (!raw) return "";
-  const base = raw.replace(/\/$/, "");
+  const withProtocol = /^[a-z][a-z\d+\-.]*:\/\//i.test(raw) ? raw : `https://${raw}`;
+
+  let parsed;
+  try {
+    parsed = new URL(withProtocol);
+  } catch {
+    return "";
+  }
+
+  const pathname = parsed.pathname.replace(/\/$/, "");
+  const rootPath = pathname.toLowerCase().endsWith("/login") ? pathname.slice(0, -6) : pathname;
+  const base = `${parsed.origin}${rootPath}`;
   const q = email ? `?email=${encodeURIComponent(email)}` : "";
   return `${base}/login${q}`;
 }

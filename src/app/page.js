@@ -15,9 +15,9 @@ const HERO_CONTENT = {
   subtitle:
     "Stop rebuilding systems for every client. Launch one powerful workflow engine built for agencies, teams, and modern service businesses.",
   visuals: [
-    { title: "1. Integrate Your Websites Forms", image: "/images/hero/first_slide/integrations.png" },
-    { title: "2. Capture The Leads", image: "/images/hero/first_slide/lead_capture.png" },
-    { title: "3. Convert Leads To Customers", image: "/images/hero/first_slide/convert.png" },
+    { title: "1. Integrate Your Websites Forms", image: "/Images/hero/first_slide/integrations.png" },
+    { title: "2. Capture The Leads", image: "/Images/hero/first_slide/lead_capture.png" },
+    { title: "3. Convert Leads To Customers", image: "/Images/hero/first_slide/convert.png" },
   ],
 };
 

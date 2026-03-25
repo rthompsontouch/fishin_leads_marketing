@@ -42,7 +42,7 @@ export default function Navbar() {
             onClick={closeMobileNav}
           >
             <Image
-              src="/images/brand/fishinleads_logo.png"
+              src="/Images/brand/fishinleads_logo.png"
               alt="Fishin Leads"
               width={360}
               height={86}
@@ -93,7 +93,7 @@ export default function Navbar() {
         <section className="mobile-nav-panel" role="dialog" aria-modal="true" aria-label="Mobile navigation">
           <div className="mobile-nav-header">
             <Image
-              src="/images/brand/fishinleads_logo.png"
+              src="/Images/brand/fishinleads_logo.png"
               alt="Fishin Leads"
               width={360}
               height={86}

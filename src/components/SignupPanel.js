@@ -476,7 +476,7 @@ export default function SignupPanel() {
       <section className="signup-panel" role="dialog" aria-modal="true" aria-label="Sign up">
         <aside className="signup-left">
           <Image
-            src="/images/brand/fishinleads_logo.png"
+            src="/Images/brand/fishinleads_logo.png"
             alt="Fishin Leads"
             width={460}
             height={109}

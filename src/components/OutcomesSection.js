@@ -16,21 +16,21 @@ export default function OutcomesSection() {
   const outcomes = [
     {
       eyebrow: "Velocity",
-      icon: "/images/icons/velocity.svg",
+      icon: "/Images/icons/velocity.svg",
       title: "Launch client CRM faster",
       copy: "Spin up new client environments without rebuilding your operating model every time.",
       points: ["Reusable automation blocks", "Template-driven onboarding"],
     },
     {
       eyebrow: "Conversion",
-      icon: "/images/icons/conversion.svg",
+      icon: "/Images/icons/conversion.svg",
       title: "Turn pipeline into revenue",
       copy: "Keep high-intent opportunities moving with instant routing and automated follow-up.",
       points: ["Unified inbox + timeline", "No-miss handoff automations"],
     },
     {
       eyebrow: "Control",
-      icon: "/images/icons/control.svg",
+      icon: "/Images/icons/control.svg",
       title: "Run everything from one layer",
       copy: "Pipeline, reporting, communication, and permissions in one growth command center.",
       points: ["Consistent team execution", "Clear owner-level visibility"],
